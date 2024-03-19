@@ -7,6 +7,7 @@
   - [Manually getting app to work](#manually-getting-app-to-work)
   - [Script for Deploying App](#script-for-deploying-app)
   - [Deploying Database](#deploying-database)
+    - [Manually](#manually)
     - [Script for deploying database](#script-for-deploying-database)
   - [How to connect database with the app](#how-to-connect-database-with-the-app)
 
@@ -43,17 +44,17 @@ EC2 = Elastic Compute Cloud
    2. `#$nrconf{restart} = 'i';`  
 Uncomment and change to:
 `$nrconf{restart} = 'a';` to restart services automatically
-1. `export DB_HOST=mongodb://10.0.3.5:27017/posts` 
-2. `sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y`
-3. `sudo apt install nginx -y`
-4. Go into `/etc/nginx/sites-available/deafult` - and change 'try files' line to `proxy_pass http://127.0.0.1:3000;`
+1. ` sudo apt update -y`
+2. `sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y` - these two steps update and upgrade all files and dependencies without user intervemtion needed
+3. `sudo apt install nginx -y` - installs nginx
+4. Go into `/etc/nginx/sites-available/deafult` - and change 'try files' line to `proxy_pass http://127.0.0.1:3000;` - sets up a proxy pass so we dont need to open port 3000 not enter in browser, it will auto redirect to there
 5. `sudo systemctl restart nginx
-sudo systemctl enable nginx`
+sudo systemctl enable nginx` - restart and enable nginx
 6. download node.js -
 `curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&\`
-7. `sudo apt-get install -y nodejs`
-8. `git clone https://github.com/srubel19065/tech257_sparta_app.git`
-9. `cd tech257_sparta_app/app/`
+7. `sudo apt-get install -y nodejs` - install node.js
+8. `git clone https://github.com/srubel19065/tech257_sparta_app.git` - clone into git repo where app folder is
+9. `cd tech257_sparta_app/app/` - cd into app folder
 10. create env variable for the connection between app and database - `export DB_HOST=mongodb://10.0.3.5:27017/posts`
 11. ```
     #installing npm
@@ -123,6 +124,22 @@ pm2 save
 1. Create EC2 with standard config
 2. Make Security Group and have ports 22 for SSH and 27017 for MongoDB open to allow the app to access the app
 3. SSH into the database ec2
+
+### Manually 
+1. `sudo nano /etc/needrestart/needrestart.conf` 
+   2. `#$nrconf{restart} = 'i';`  
+Uncomment and change to:
+`$nrconf{restart} = 'a';` to restart services automatically
+2. ` sudo apt update -y`
+2. `sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y` - these two steps update and upgrade all files and dependencies without user intervemtion needed
+3. `curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
+   sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+   --dearmor` - downloads mongoDB
+4. `echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list` - creates list file
+5. `sudo apt-get update -y` - reupdate
+6. `sudo apt-get install -y mongodb-org=7.0.6 mongodb-org-database=7.0.6 mongodb-org-server=7.0.6 mongodb-mongosh=2.1.5 mongodb-org-mongos=7.0.6 mongodb-org-tools=7.0.6` - install mongoDB
+7. `sudo systemctl start mongod
+sudo systemctl enable mongod` 
 
 
 ### Script for deploying database

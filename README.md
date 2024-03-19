@@ -4,7 +4,8 @@
     - [What is it?](#what-is-it)
     - [Creating EC2](#creating-ec2)
     - [Connecting through SSH](#connecting-through-ssh)
-  - [Manually getting app to work](#manually-getting-app-to-work)
+  - [2 Tier AWS Deployment](#2-tier-aws-deployment)
+    - [Manually getting app to work](#manually-getting-app-to-work)
   - [Script for Deploying App](#script-for-deploying-app)
   - [Deploying Database](#deploying-database)
     - [Manually](#manually)
@@ -38,7 +39,8 @@ EC2 = Elastic Compute Cloud
 2. `Connect` = will show you how to connect and we will use ssh
 3. copy paste the ssh link and ssh into the ec2
 
-## Manually getting app to work
+## 2 Tier AWS Deployment
+### Manually getting app to work
 1. If Ubuntu 22.04 is used, a restart config file was added and as default it has the restart as interactive so an extra step will be needed:
    1. `sudo nano /etc/needrestart/needrestart.conf` 
    2. `#$nrconf{restart} = 'i';`  

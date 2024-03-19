@@ -1,4 +1,15 @@
 # Introduction to AWS
+- [Introduction to AWS](#introduction-to-aws)
+  - [EC2](#ec2)
+    - [What is it?](#what-is-it)
+    - [Creating EC2](#creating-ec2)
+    - [Connecting through SSH](#connecting-through-ssh)
+  - [Manually getting app to work](#manually-getting-app-to-work)
+  - [Script for Deploying App](#script-for-deploying-app)
+  - [Deploying Database](#deploying-database)
+    - [Script for deploying database](#script-for-deploying-database)
+  - [How to connect database with the app](#how-to-connect-database-with-the-app)
+
 
 ## EC2
 ### What is it?
@@ -21,20 +32,45 @@ EC2 = Elastic Compute Cloud
 7. Viewing the instances: You can see whether it has initialised, whether it is running etc.
    ![Alt text](image-4.png)
 
-## Connecting through SSH
+### Connecting through SSH
 1. Click Instance ID and it will take you to the instance with all details of it 
 2. `Connect` = will show you how to connect and we will use ssh
 3. copy paste the ssh link and ssh into the ec2
 
 ## Manually getting app to work
-1. Follow script commands 
-2. If Ubuntu 22.04 is used, a restart config file was added and as default it has the restart as interactive so an extra step will be needed:
+1. If Ubuntu 22.04 is used, a restart config file was added and as default it has the restart as interactive so an extra step will be needed:
    1. `sudo nano /etc/needrestart/needrestart.conf` 
    2. `#$nrconf{restart} = 'i';`  
 Uncomment and change to:
 `$nrconf{restart} = 'a';` to restart services automatically
+1. `export DB_HOST=mongodb://10.0.3.5:27017/posts` 
+2. `sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y`
+3. `sudo apt install nginx -y`
+4. Go into `/etc/nginx/sites-available/deafult` - and change 'try files' line to `proxy_pass http://127.0.0.1:3000;`
+5. `sudo systemctl restart nginx
+sudo systemctl enable nginx`
+6. download node.js -
+`curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&\`
+7. `sudo apt-get install -y nodejs`
+8. `git clone https://github.com/srubel19065/tech257_sparta_app.git`
+9. `cd tech257_sparta_app/app/`
+10. create env variable for the connection between app and database - `export DB_HOST=mongodb://10.0.3.5:27017/posts`
+11. ```
+    #installing npm
+    npm install
 
-## Script
+    #installing pm2 
+    sudo npm install pm2@latest -g
+
+    #stop pm2 before rerunning
+    pm2 stop app.js
+
+    #start pm2 
+    pm2 start app.js
+    ```
+
+## Script for Deploying App
+Create a shell script - `nano ....sh` and insert script, save, change permisions to execute then execute the script
 ```
 #!/bin/bash
 
@@ -65,7 +101,7 @@ git clone https://github.com/srubel19065/tech257_sparta_app.git
 # getting into the app folder
 cd tech257_sparta_app/app/
 
-# creating env variable to establish connection through priv ip
+# creating env variable to establish connection through priv ip, uncomment when needed
 # export DB_HOST=mongodb://<priv ip>:27017/posts
 
 # installing npm
@@ -81,6 +117,51 @@ pm2 stop app.js
 pm2 start app.js
 
 pm2 save 
-
-
 ```
+
+## Deploying Database
+1. Create EC2 with standard config
+2. Make Security Group and have ports 22 for SSH and 27017 for MongoDB open to allow the app to access the app
+3. SSH into the database ec2
+
+
+### Script for deploying database
+```
+#!/bin/bash
+
+# change restart function to auto 
+sed -i "s/#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'a';/" /etc/needrestart/needrestart.conf
+
+# update
+sudo apt update -y
+
+# This upgrade makes all upgrades noninteractive and dont need user input
+sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+
+# download mongoDB
+curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
+   sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+   --dearmor
+
+# creates a list file
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+
+# reupdate
+sudo apt-get update -y
+
+# install mongoDB 
+sudo apt-get install -y mongodb-org=7.0.6 mongodb-org-database=7.0.6 mongodb-org-server=7.0.6 mongodb-mongosh=2.1.5 mongodb-org-mongos=7.0.6 mongodb-org-tools=7.0.6
+ 
+# will change the bindip to 0.0.0.0
+sudo sed -i 's@127.0.0.1@0.0.0.0@' /etc/mongod.conf
+
+# start and enable mongoDB
+sudo systemctl start mongod
+sudo systemctl enable mongod
+```
+
+## How to connect database with the app
+1. For the app to recognise the database, we need an environment variable with established the ip of the database. `export DB_HOST=mongodb://<db ip:27017/posts`
+2. If it is fresh Vms, run the database script
+3. Run the app script
+4. Use the app IP in the browser and followed by /posts to see the database page.

@@ -11,6 +11,7 @@
     - [Manually](#manually)
     - [Script for deploying database](#script-for-deploying-database)
   - [How to connect database with the app](#how-to-connect-database-with-the-app)
+  - [AWS Vs Azure](#aws-vs-azure)
 
 
 ## EC2
@@ -22,17 +23,17 @@ EC2 = Elastic Compute Cloud
 ### Creating EC2 
 1. `name` = Name it appropriately to what the ec2 will be used for
 2. `image` = the OS used with all preset configurations to be used. Can be your own one or one provided
-   ![Alt text](image.png)
+   ![Alt text](Images/ami.png)
 3. `Instance type` = Size of instance. First part (t2) stands for the family type and the second part (.micro) stands for the size within that family
-   ![Alt text](image-1.png)
+   ![Alt text](Images/type.png.png)
 4. `Key pair` = keypair used wen logging in
 5. `Network seting` = The Security group and rules allowed 
    - Click edit to change name and add new rules
-![Alt text](image-2.png)
+![Alt text](Images/sg.png)
 6. Summary: AWS provides a summary of what has been selected. Good for reviewing 
-   ![Alt text](image-3.png)
+   ![Alt text](Images/summary.png)
 7. Viewing the instances: You can see whether it has initialised, whether it is running etc.
-   ![Alt text](image-4.png)
+   ![Alt text](Images/running.png)
 
 ### Connecting through SSH
 1. Click Instance ID and it will take you to the instance with all details of it 
@@ -184,3 +185,29 @@ sudo systemctl enable mongod
 2. If it is fresh Vms, run the database script
 3. Run the app script
 4. Use the app IP in the browser and followed by /posts to see the database page.
+
+
+## AWS Vs Azure
+1. Dynamic vs Static IP
+   - AWS: Dynamic (changes every time)
+   - Azure: Static (stays the same)
+2. Creating image
+   - Azure: need to use CLI to run some commands, and the instance cant be used after
+   - AWS: simpler
+3. Resource groups
+   - Azure: must go in a RG
+   - AWS: can use RG for organisation but not necessary
+4. Virtual Network
+   - Azure: need to create your own from the beginning
+   - AWS: VPC is created by default to be used 
+5. Terminology
+6. Autoscaling
+   - Azure: 
+     - With the image the scale sets are created
+     - AZ's have one subnet for all 3
+   - AWS:
+     - A launch template us used by the autoscaling group so it gets all the configurations
+     - AZ's have a subnet linked to them EACH
+7. Dashboard:
+   - Azure: Intervals of a minute by default
+   - AWS: Need to enable detailed monitoring to get smaller intervals like a minute

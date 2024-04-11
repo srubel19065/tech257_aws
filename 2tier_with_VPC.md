@@ -1,5 +1,5 @@
 # Virtual Private Cloud (VPC)
-**VPC is the AWS version of a virtual network. Its the apartment that has rooms and furniture inside. The rooms are subnets and the furniture being the instances inside. 
+**VPC is the AWS version of a virtual network. Its the apartment that has rooms and furniture inside. The rooms are subnets and the furniture being the instances inside.**
 - By default, instances have default VPC but that has less security as many can use it
 - Creating own one means more security, restrict what can access and can be routed
 - What is included in a VPC:

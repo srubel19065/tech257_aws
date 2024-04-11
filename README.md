@@ -211,3 +211,5 @@ sudo systemctl enable mongod
 7. Dashboard:
    - Azure: Intervals of a minute by default
    - AWS: Need to enable detailed monitoring to get smaller intervals like a minute
+8. Security Groups:
+   - Azure: Security group can link to NIC or subnet 

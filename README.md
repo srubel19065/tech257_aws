@@ -213,3 +213,4 @@ sudo systemctl enable mongod
    - AWS: Need to enable detailed monitoring to get smaller intervals like a minute
 8. Security Groups:
    - Azure: Security group can link to NIC or subnet 
+9. Storage
